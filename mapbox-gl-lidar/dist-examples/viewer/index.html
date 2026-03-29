@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapbox GL LiDAR - Viewer</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #url-form-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #1a5f7a 0%, #159895 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    #url-form-container h1 {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+
+    #url-form-container .subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    #url-form {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    #url-input {
+      flex: 1;
+      min-width: 300px;
+      padding: 14px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    #url-input:focus {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    #load-btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #0d4f5e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    #load-btn:hover {
+      background: #0a3d4a;
+    }
+
+    #load-btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+
+    .sample-urls {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .sample-urls p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .sample-urls button {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    .sample-urls button:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .back-link {
+      margin-top: 40px;
+    }
+
+    .back-link a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    .powered-by {
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+    }
+
+    .powered-by a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .powered-by a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+      display: none;
+      text-align: center;
+    }
+
+    #loading-indicator .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #1a5f7a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  <script type="module" crossorigin src="/mapbox-gl-lidar/assets/viewer-0bIRxP46.js"></script>
+  <link rel="modulepreload" crossorigin href="/mapbox-gl-lidar/assets/mapbox-gl-DNTT9Ym1.js">
+  <link rel="stylesheet" crossorigin href="/mapbox-gl-lidar/assets/mapbox-gl-C_8_lvFU.css">
+</head>
+<body>
+  <div id="url-form-container">
+    <h1>LiDAR Point Cloud Viewer</h1>
+    <p class="subtitle">Enter a COPC LAZ or EPT URL to visualize</p>
+
+    <form id="url-form">
+      <input
+        type="url"
+        id="url-input"
+        placeholder="https://example.com/pointcloud.copc.laz"
+        required
+      >
+      <button type="submit" id="load-btn">Load</button>
+    </form>
+
+    <div class="sample-urls">
+      <p>Or try a sample dataset:</p>
+      <button type="button" data-url="https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz">
+        Autzen Stadium (COPC)
+      </button>
+      <button type="button" data-url="https://data.opengeos.org/madison.copc.laz">
+        Madison (COPC)
+      </button>
+      <button type="button" data-url="https://data.opengeos.org/USGS_LPC_TX_CoastalRegion_2018_A18_stratmap18-50cm-2995201a1.copc.laz">
+        Texas (COPC)
+      </button>
+      <button type="button" data-url="https://data.opengeos.org/chicago.copc.laz">
+        Chicago (COPC)
+      </button>
+      <button type="button" data-url="https://s3-us-west-2.amazonaws.com/usgs-lidar-public/AL_17Co_1_2020/ept.json">
+        Alabama (EPT)
+      </button>
+      <button type="button" data-url="https://s3-us-west-2.amazonaws.com/usgs-lidar-public/USGS_LPC_IL_4County_Cook_2017_LAS_2019/ept.json">
+        Chicago (EPT)
+      </button>
+    </div>
+
+    <div class="back-link">
+      <a href="../">&larr; Back to examples</a>
+    </div>
+
+    <div class="powered-by">
+      Powered by <a href="https://github.com/opengeos/mapbox-gl-lidar" target="_blank">mapbox-gl-lidar</a>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="loading-indicator">
+    <div class="spinner"></div>
+    <p>Loading point cloud...</p>
+  </div>
+
+</body>
+</html>
