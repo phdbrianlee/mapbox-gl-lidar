@@ -1,5 +1,5 @@
-import type { ColorRangeConfig } from '../core/types';
-import { DualRangeSlider } from './DualRangeSlider';
+import type { ColorRangeConfig } from "../core/types";
+import { DualRangeSlider } from "./DualRangeSlider";
 
 /** Default percentile values */
 const DEFAULT_PERCENTILE_LOW = 2;
@@ -50,66 +50,67 @@ export class PercentileRangeControl {
    * @returns The control container element
    */
   render(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'lidar-color-range';
+    const container = document.createElement("div");
+    container.className = "lidar-color-range";
 
     // Label row with Reset button
-    const labelRow = document.createElement('div');
-    labelRow.className = 'lidar-color-range-header';
+    const labelRow = document.createElement("div");
+    labelRow.className = "lidar-color-range-header";
 
-    const label = document.createElement('div');
-    label.className = 'lidar-control-label';
-    label.textContent = 'Color Range';
+    const label = document.createElement("div");
+    label.className = "lidar-control-label";
+    label.textContent = "颜色范围";
     labelRow.appendChild(label);
 
     // Reset button
-    const resetButton = document.createElement('button');
-    resetButton.className = 'lidar-range-reset-btn';
-    resetButton.textContent = 'Reset';
-    resetButton.title = 'Reset to default (2-98% percentile)';
-    resetButton.addEventListener('click', () => this._onReset());
+    const resetButton = document.createElement("button");
+    resetButton.className = "lidar-range-reset-btn";
+    resetButton.textContent = "重置";
+    resetButton.title = "重置为默认值 (2-98% 百分位)";
+    resetButton.addEventListener("click", () => this._onReset());
     labelRow.appendChild(resetButton);
 
     container.appendChild(labelRow);
 
     // Mode toggle (radio buttons)
-    const modeContainer = document.createElement('div');
-    modeContainer.className = 'lidar-range-mode';
+    const modeContainer = document.createElement("div");
+    modeContainer.className = "lidar-range-mode";
 
     // Percentile radio
-    const percentileLabel = document.createElement('label');
-    const percentileRadio = document.createElement('input');
-    percentileRadio.type = 'radio';
-    percentileRadio.name = 'lidar-range-mode';
-    percentileRadio.value = 'percentile';
-    percentileRadio.checked = this._options.config.mode === 'percentile';
+    const percentileLabel = document.createElement("label");
+    const percentileRadio = document.createElement("input");
+    percentileRadio.type = "radio";
+    percentileRadio.name = "lidar-range-mode";
+    percentileRadio.value = "percentile";
+    percentileRadio.checked = this._options.config.mode === "percentile";
     this._percentileRadio = percentileRadio;
     percentileLabel.appendChild(percentileRadio);
-    percentileLabel.appendChild(document.createTextNode(' Percentile'));
+    percentileLabel.appendChild(document.createTextNode(" 百分位"));
     modeContainer.appendChild(percentileLabel);
 
     // Absolute radio
-    const absoluteLabel = document.createElement('label');
-    const absoluteRadio = document.createElement('input');
-    absoluteRadio.type = 'radio';
-    absoluteRadio.name = 'lidar-range-mode';
-    absoluteRadio.value = 'absolute';
-    absoluteRadio.checked = this._options.config.mode === 'absolute';
+    const absoluteLabel = document.createElement("label");
+    const absoluteRadio = document.createElement("input");
+    absoluteRadio.type = "radio";
+    absoluteRadio.name = "lidar-range-mode";
+    absoluteRadio.value = "absolute";
+    absoluteRadio.checked = this._options.config.mode === "absolute";
     this._absoluteRadio = absoluteRadio;
     absoluteLabel.appendChild(absoluteRadio);
-    absoluteLabel.appendChild(document.createTextNode(' Absolute'));
+    absoluteLabel.appendChild(document.createTextNode(" 绝对值"));
     modeContainer.appendChild(absoluteLabel);
 
     container.appendChild(modeContainer);
 
     // Percentile slider container
-    const percentileSliderContainer = document.createElement('div');
-    percentileSliderContainer.style.display = this._options.config.mode === 'percentile' ? 'block' : 'none';
+    const percentileSliderContainer = document.createElement("div");
+    percentileSliderContainer.style.display =
+      this._options.config.mode === "percentile" ? "block" : "none";
     this._percentileSliderContainer = percentileSliderContainer;
 
     // Create percentile dual range slider (0-100%)
     this._percentileSlider = new DualRangeSlider({
-      label: '',
+      label: "",
       min: 0,
       max: 100,
       step: 1,
@@ -123,8 +124,9 @@ export class PercentileRangeControl {
     container.appendChild(percentileSliderContainer);
 
     // Absolute slider container
-    const absoluteSliderContainer = document.createElement('div');
-    absoluteSliderContainer.style.display = this._options.config.mode === 'absolute' ? 'block' : 'none';
+    const absoluteSliderContainer = document.createElement("div");
+    absoluteSliderContainer.style.display =
+      this._options.config.mode === "absolute" ? "block" : "none";
     this._absoluteSliderContainer = absoluteSliderContainer;
 
     // Create absolute dual range slider
@@ -133,7 +135,7 @@ export class PercentileRangeControl {
     const absMax = this._options.config.absoluteMax ?? dataBounds.max;
 
     this._absoluteSlider = new DualRangeSlider({
-      label: '',
+      label: "",
       min: dataBounds.min,
       max: dataBounds.max,
       step: this._getAbsoluteStep(dataBounds),
@@ -147,8 +149,8 @@ export class PercentileRangeControl {
     container.appendChild(absoluteSliderContainer);
 
     // Event listeners for mode toggle
-    percentileRadio.addEventListener('change', () => this._onModeChange());
-    absoluteRadio.addEventListener('change', () => this._onModeChange());
+    percentileRadio.addEventListener("change", () => this._onModeChange());
+    absoluteRadio.addEventListener("change", () => this._onModeChange());
 
     return container;
   }
@@ -162,14 +164,14 @@ export class PercentileRangeControl {
     this._options.config = { ...config };
 
     if (this._percentileRadio && this._absoluteRadio) {
-      this._percentileRadio.checked = config.mode === 'percentile';
-      this._absoluteRadio.checked = config.mode === 'absolute';
+      this._percentileRadio.checked = config.mode === "percentile";
+      this._absoluteRadio.checked = config.mode === "absolute";
     }
 
     if (this._percentileSlider) {
       this._percentileSlider.setRange(
         config.percentileLow ?? DEFAULT_PERCENTILE_LOW,
-        config.percentileHigh ?? DEFAULT_PERCENTILE_HIGH
+        config.percentileHigh ?? DEFAULT_PERCENTILE_HIGH,
       );
     }
 
@@ -177,7 +179,7 @@ export class PercentileRangeControl {
       const dataBounds = this._options.dataBounds || { min: 0, max: 100 };
       this._absoluteSlider.setRange(
         config.absoluteMin ?? dataBounds.min,
-        config.absoluteMax ?? dataBounds.max
+        config.absoluteMax ?? dataBounds.max,
       );
     }
 
@@ -257,12 +259,12 @@ export class PercentileRangeControl {
    * Syncs values when switching between modes using actual computed bounds.
    */
   private _onModeChange(): void {
-    const newMode = this._percentileRadio?.checked ? 'percentile' : 'absolute';
+    const newMode = this._percentileRadio?.checked ? "percentile" : "absolute";
     const oldMode = this._options.config.mode;
 
     // Sync values when switching modes
     if (newMode !== oldMode) {
-      if (newMode === 'absolute') {
+      if (newMode === "absolute") {
         // Switching from percentile to absolute: use actual computed bounds
         if (this._computedBounds) {
           // Use the actual computed percentile bounds
@@ -272,16 +274,29 @@ export class PercentileRangeControl {
           // Fallback to linear approximation if no computed bounds available
           const { min: dataMin, max: dataMax } = this._options.dataBounds;
           const range = dataMax - dataMin;
-          const pLow = this._options.config.percentileLow ?? DEFAULT_PERCENTILE_LOW;
-          const pHigh = this._options.config.percentileHigh ?? DEFAULT_PERCENTILE_HIGH;
+          const pLow =
+            this._options.config.percentileLow ?? DEFAULT_PERCENTILE_LOW;
+          const pHigh =
+            this._options.config.percentileHigh ?? DEFAULT_PERCENTILE_HIGH;
 
-          this._options.config.absoluteMin = parseFloat((dataMin + range * (pLow / 100)).toFixed(2));
-          this._options.config.absoluteMax = parseFloat((dataMin + range * (pHigh / 100)).toFixed(2));
+          this._options.config.absoluteMin = parseFloat(
+            (dataMin + range * (pLow / 100)).toFixed(2),
+          );
+          this._options.config.absoluteMax = parseFloat(
+            (dataMin + range * (pHigh / 100)).toFixed(2),
+          );
         }
 
         // Update absolute slider
-        if (this._absoluteSlider && this._options.config.absoluteMin !== undefined && this._options.config.absoluteMax !== undefined) {
-          this._absoluteSlider.setRange(this._options.config.absoluteMin, this._options.config.absoluteMax);
+        if (
+          this._absoluteSlider &&
+          this._options.config.absoluteMin !== undefined &&
+          this._options.config.absoluteMax !== undefined
+        ) {
+          this._absoluteSlider.setRange(
+            this._options.config.absoluteMin,
+            this._options.config.absoluteMax,
+          );
         }
       }
       // When switching from absolute to percentile, keep existing percentile values
@@ -298,7 +313,7 @@ export class PercentileRangeControl {
    */
   private _onReset(): void {
     // Reset to default percentile mode
-    this._options.config.mode = 'percentile';
+    this._options.config.mode = "percentile";
     this._options.config.percentileLow = DEFAULT_PERCENTILE_LOW;
     this._options.config.percentileHigh = DEFAULT_PERCENTILE_HIGH;
 
@@ -306,8 +321,12 @@ export class PercentileRangeControl {
     if (this._options.dataBounds) {
       const { min: dataMin, max: dataMax } = this._options.dataBounds;
       const range = dataMax - dataMin;
-      this._options.config.absoluteMin = parseFloat((dataMin + range * (DEFAULT_PERCENTILE_LOW / 100)).toFixed(2));
-      this._options.config.absoluteMax = parseFloat((dataMin + range * (DEFAULT_PERCENTILE_HIGH / 100)).toFixed(2));
+      this._options.config.absoluteMin = parseFloat(
+        (dataMin + range * (DEFAULT_PERCENTILE_LOW / 100)).toFixed(2),
+      );
+      this._options.config.absoluteMax = parseFloat(
+        (dataMin + range * (DEFAULT_PERCENTILE_HIGH / 100)).toFixed(2),
+      );
     }
 
     // Update UI
@@ -318,10 +337,20 @@ export class PercentileRangeControl {
       this._absoluteRadio.checked = false;
     }
     if (this._percentileSlider) {
-      this._percentileSlider.setRange(DEFAULT_PERCENTILE_LOW, DEFAULT_PERCENTILE_HIGH);
+      this._percentileSlider.setRange(
+        DEFAULT_PERCENTILE_LOW,
+        DEFAULT_PERCENTILE_HIGH,
+      );
     }
-    if (this._absoluteSlider && this._options.config.absoluteMin !== undefined && this._options.config.absoluteMax !== undefined) {
-      this._absoluteSlider.setRange(this._options.config.absoluteMin, this._options.config.absoluteMax);
+    if (
+      this._absoluteSlider &&
+      this._options.config.absoluteMin !== undefined &&
+      this._options.config.absoluteMax !== undefined
+    ) {
+      this._absoluteSlider.setRange(
+        this._options.config.absoluteMin,
+        this._options.config.absoluteMax,
+      );
     }
 
     this._updateSlidersVisibility();
@@ -334,11 +363,11 @@ export class PercentileRangeControl {
   private _updateSlidersVisibility(): void {
     if (this._percentileSliderContainer) {
       this._percentileSliderContainer.style.display =
-        this._options.config.mode === 'percentile' ? 'block' : 'none';
+        this._options.config.mode === "percentile" ? "block" : "none";
     }
     if (this._absoluteSliderContainer) {
       this._absoluteSliderContainer.style.display =
-        this._options.config.mode === 'absolute' ? 'block' : 'none';
+        this._options.config.mode === "absolute" ? "block" : "none";
     }
   }
 

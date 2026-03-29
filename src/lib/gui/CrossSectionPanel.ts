@@ -1,5 +1,5 @@
-import type { ElevationProfile, ColormapName } from '../core/types';
-import { ElevationProfileChart } from './ElevationProfileChart';
+import type { ElevationProfile, ColormapName } from "../core/types";
+import { ElevationProfileChart } from "./ElevationProfileChart";
 
 /**
  * Callbacks for CrossSectionPanel interactions
@@ -73,17 +73,20 @@ export class CrossSectionPanel {
    * @param callbacks - Panel callbacks
    * @param options - Panel options
    */
-  constructor(callbacks: CrossSectionPanelCallbacks, options?: CrossSectionPanelOptions) {
+  constructor(
+    callbacks: CrossSectionPanelCallbacks,
+    options?: CrossSectionPanelOptions,
+  ) {
     this._callbacks = callbacks;
     this._options = {
       bufferDistance: options?.bufferDistance ?? 10,
-      colormap: options?.colormap ?? 'viridis',
+      colormap: options?.colormap ?? "viridis",
       chartHeight: options?.chartHeight ?? 180,
     };
 
     // Create container
-    this._container = document.createElement('div');
-    this._container.className = 'lidar-crosssection-panel';
+    this._container = document.createElement("div");
+    this._container.className = "lidar-crosssection-panel";
 
     // Create inline chart (smaller, for panel)
     this._chart = new ElevationProfileChart({
@@ -137,8 +140,8 @@ export class CrossSectionPanel {
   setDrawing(isDrawing: boolean): void {
     this._isDrawing = isDrawing;
     if (this._drawButton) {
-      this._drawButton.textContent = isDrawing ? 'Cancel' : 'Draw Line';
-      this._drawButton.classList.toggle('active', isDrawing);
+      this._drawButton.textContent = isDrawing ? "取消" : "绘制线段";
+      this._drawButton.classList.toggle("active", isDrawing);
     }
   }
 
@@ -173,15 +176,15 @@ export class CrossSectionPanel {
    */
   private _build(): void {
     // Controls row
-    const controls = document.createElement('div');
-    controls.className = 'lidar-crosssection-controls';
+    const controls = document.createElement("div");
+    controls.className = "lidar-crosssection-controls";
 
     // Draw button
-    this._drawButton = document.createElement('button');
-    this._drawButton.type = 'button';
-    this._drawButton.className = 'lidar-control-button lidar-crosssection-draw';
-    this._drawButton.textContent = 'Draw Line';
-    this._drawButton.addEventListener('click', (e) => {
+    this._drawButton = document.createElement("button");
+    this._drawButton.type = "button";
+    this._drawButton.className = "lidar-control-button lidar-crosssection-draw";
+    this._drawButton.textContent = "绘制线段";
+    this._drawButton.addEventListener("click", (e) => {
       e.stopPropagation();
       this._isDrawing = !this._isDrawing;
       this.setDrawing(this._isDrawing);
@@ -190,11 +193,12 @@ export class CrossSectionPanel {
     controls.appendChild(this._drawButton);
 
     // Clear button
-    this._clearButton = document.createElement('button');
-    this._clearButton.type = 'button';
-    this._clearButton.className = 'lidar-control-button lidar-crosssection-clear';
-    this._clearButton.textContent = 'Clear';
-    this._clearButton.addEventListener('click', (e) => {
+    this._clearButton = document.createElement("button");
+    this._clearButton.type = "button";
+    this._clearButton.className =
+      "lidar-control-button lidar-crosssection-clear";
+    this._clearButton.textContent = "清除";
+    this._clearButton.addEventListener("click", (e) => {
       e.stopPropagation();
       this._callbacks.onClear();
       this.setDrawing(false);
@@ -202,26 +206,26 @@ export class CrossSectionPanel {
     controls.appendChild(this._clearButton);
 
     // Download CSV button
-    this._downloadButton = document.createElement('button');
-    this._downloadButton.type = 'button';
-    this._downloadButton.className = 'lidar-control-button secondary';
-    this._downloadButton.textContent = 'CSV';
-    this._downloadButton.title = 'Download profile data as CSV';
+    this._downloadButton = document.createElement("button");
+    this._downloadButton.type = "button";
+    this._downloadButton.className = "lidar-control-button secondary";
+    this._downloadButton.textContent = "CSV";
+    this._downloadButton.title = "下载剖面数据为 CSV";
     this._downloadButton.disabled = true;
-    this._downloadButton.addEventListener('click', (e) => {
+    this._downloadButton.addEventListener("click", (e) => {
       e.stopPropagation();
       this._downloadCSV();
     });
     controls.appendChild(this._downloadButton);
 
     // Expand button
-    this._expandButton = document.createElement('button');
-    this._expandButton.type = 'button';
-    this._expandButton.className = 'lidar-control-button secondary';
-    this._expandButton.innerHTML = '⤢';
-    this._expandButton.title = 'Expand chart in popup';
+    this._expandButton = document.createElement("button");
+    this._expandButton.type = "button";
+    this._expandButton.className = "lidar-control-button secondary";
+    this._expandButton.innerHTML = "⤢";
+    this._expandButton.title = "在弹出窗口中展开图表";
     this._expandButton.disabled = true;
-    this._expandButton.addEventListener('click', (e) => {
+    this._expandButton.addEventListener("click", (e) => {
       e.stopPropagation();
       this._openPopup();
     });
@@ -230,26 +234,26 @@ export class CrossSectionPanel {
     this._container.appendChild(controls);
 
     // Buffer distance slider
-    const bufferGroup = document.createElement('div');
-    bufferGroup.className = 'lidar-control-group';
+    const bufferGroup = document.createElement("div");
+    bufferGroup.className = "lidar-control-group";
 
-    const bufferLabel = document.createElement('label');
-    bufferLabel.className = 'lidar-control-label';
-    bufferLabel.textContent = 'Buffer Distance: ';
+    const bufferLabel = document.createElement("label");
+    bufferLabel.className = "lidar-control-label";
+    bufferLabel.textContent = "缓冲距离: ";
 
-    this._bufferValue = document.createElement('span');
+    this._bufferValue = document.createElement("span");
     this._bufferValue.textContent = `${this._options.bufferDistance} m`;
     bufferLabel.appendChild(this._bufferValue);
     bufferGroup.appendChild(bufferLabel);
 
-    this._bufferSlider = document.createElement('input');
-    this._bufferSlider.type = 'range';
-    this._bufferSlider.className = 'lidar-control-slider';
-    this._bufferSlider.min = '1';
-    this._bufferSlider.max = '100';
-    this._bufferSlider.step = '1';
+    this._bufferSlider = document.createElement("input");
+    this._bufferSlider.type = "range";
+    this._bufferSlider.className = "lidar-control-slider";
+    this._bufferSlider.min = "1";
+    this._bufferSlider.max = "100";
+    this._bufferSlider.step = "1";
     this._bufferSlider.value = String(this._options.bufferDistance);
-    this._bufferSlider.addEventListener('input', (e) => {
+    this._bufferSlider.addEventListener("input", (e) => {
       e.stopPropagation();
       const meters = parseInt(this._bufferSlider!.value, 10);
       this._bufferValue!.textContent = `${meters} m`;
@@ -260,14 +264,14 @@ export class CrossSectionPanel {
     this._container.appendChild(bufferGroup);
 
     // Chart container (simple, no resize handle)
-    this._chartContainer = document.createElement('div');
-    this._chartContainer.className = 'lidar-crosssection-chart';
+    this._chartContainer = document.createElement("div");
+    this._chartContainer.className = "lidar-crosssection-chart";
     this._chartContainer.appendChild(this._chart.render());
     this._container.appendChild(this._chartContainer);
 
     // Statistics container
-    this._statsContainer = document.createElement('div');
-    this._statsContainer.className = 'lidar-crosssection-stats';
+    this._statsContainer = document.createElement("div");
+    this._statsContainer.className = "lidar-crosssection-stats";
     this._container.appendChild(this._statsContainer);
     this._updateStats();
   }
@@ -279,26 +283,27 @@ export class CrossSectionPanel {
     if (!this._statsContainer) return;
 
     if (!this._profile || this._profile.points.length === 0) {
-      this._statsContainer.innerHTML = '<div class="lidar-crosssection-stat">No profile data</div>';
+      this._statsContainer.innerHTML =
+        '<div class="lidar-crosssection-stat">无剖面数据</div>';
       return;
     }
 
     const { stats } = this._profile;
     this._statsContainer.innerHTML = `
       <div class="lidar-crosssection-stat">
-        <span class="lidar-crosssection-stat-label">Points:</span>
+        <span class="lidar-crosssection-stat-label">点数:</span>
         <span class="lidar-crosssection-stat-value">${stats.pointCount.toLocaleString()}</span>
       </div>
       <div class="lidar-crosssection-stat">
-        <span class="lidar-crosssection-stat-label">Distance:</span>
+        <span class="lidar-crosssection-stat-label">距离:</span>
         <span class="lidar-crosssection-stat-value">${stats.totalDistance.toFixed(1)} m</span>
       </div>
       <div class="lidar-crosssection-stat">
-        <span class="lidar-crosssection-stat-label">Elevation:</span>
+        <span class="lidar-crosssection-stat-label">高程:</span>
         <span class="lidar-crosssection-stat-value">${stats.minElevation.toFixed(1)} - ${stats.maxElevation.toFixed(1)} m</span>
       </div>
       <div class="lidar-crosssection-stat">
-        <span class="lidar-crosssection-stat-label">Mean:</span>
+        <span class="lidar-crosssection-stat-label">平均:</span>
         <span class="lidar-crosssection-stat-value">${stats.meanElevation.toFixed(1)} m</span>
       </div>
     `;
@@ -327,9 +332,9 @@ export class CrossSectionPanel {
     if (!this._profile) return;
 
     // Create backdrop
-    this._popupBackdrop = document.createElement('div');
-    this._popupBackdrop.className = 'lidar-chart-popup-backdrop';
-    this._popupBackdrop.addEventListener('click', (e) => {
+    this._popupBackdrop = document.createElement("div");
+    this._popupBackdrop.className = "lidar-chart-popup-backdrop";
+    this._popupBackdrop.addEventListener("click", (e) => {
       if (this._ignoreBackdropClick) {
         this._ignoreBackdropClick = false;
         return;
@@ -340,30 +345,30 @@ export class CrossSectionPanel {
     });
 
     // Create popup container
-    this._popupContainer = document.createElement('div');
-    this._popupContainer.className = 'lidar-chart-popup';
+    this._popupContainer = document.createElement("div");
+    this._popupContainer.className = "lidar-chart-popup";
 
     // Popup header
-    const header = document.createElement('div');
-    header.className = 'lidar-chart-popup-header';
+    const header = document.createElement("div");
+    header.className = "lidar-chart-popup-header";
 
-    const title = document.createElement('span');
-    title.className = 'lidar-chart-popup-title';
-    title.textContent = 'Cross-Section Elevation Profile';
+    const title = document.createElement("span");
+    title.className = "lidar-chart-popup-title";
+    title.textContent = "横截面高程剖面";
     header.appendChild(title);
 
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'lidar-chart-popup-close';
-    closeBtn.innerHTML = '×';
-    closeBtn.title = 'Close';
-    closeBtn.addEventListener('click', () => this._closePopup());
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "lidar-chart-popup-close";
+    closeBtn.innerHTML = "×";
+    closeBtn.title = "关闭";
+    closeBtn.addEventListener("click", () => this._closePopup());
     header.appendChild(closeBtn);
 
     this._popupContainer.appendChild(header);
 
     // Create popup chart (larger)
-    const popupChartContainer = document.createElement('div');
-    popupChartContainer.className = 'lidar-chart-popup-content';
+    const popupChartContainer = document.createElement("div");
+    popupChartContainer.className = "lidar-chart-popup-content";
     this._popupChartContainer = popupChartContainer;
 
     this._popupChart = new ElevationProfileChart({
@@ -377,22 +382,22 @@ export class CrossSectionPanel {
     this._popupContainer.appendChild(popupChartContainer);
 
     // Stats in popup
-    const popupStats = document.createElement('div');
-    popupStats.className = 'lidar-chart-popup-stats';
+    const popupStats = document.createElement("div");
+    popupStats.className = "lidar-chart-popup-stats";
     const { stats } = this._profile;
     popupStats.innerHTML = `
-      <span><strong>Points:</strong> ${stats.pointCount.toLocaleString()}</span>
-      <span><strong>Distance:</strong> ${stats.totalDistance.toFixed(1)} m</span>
-      <span><strong>Elevation:</strong> ${stats.minElevation.toFixed(1)} - ${stats.maxElevation.toFixed(1)} m</span>
-      <span><strong>Mean:</strong> ${stats.meanElevation.toFixed(1)} m</span>
+      <span><strong>点数:</strong> ${stats.pointCount.toLocaleString()}</span>
+      <span><strong>距离:</strong> ${stats.totalDistance.toFixed(1)} m</span>
+      <span><strong>高程:</strong> ${stats.minElevation.toFixed(1)} - ${stats.maxElevation.toFixed(1)} m</span>
+      <span><strong>平均:</strong> ${stats.meanElevation.toFixed(1)} m</span>
     `;
     this._popupContainer.appendChild(popupStats);
 
     // Resize handle (corner)
-    const resizeHandle = document.createElement('div');
-    resizeHandle.className = 'lidar-chart-popup-resize';
-    resizeHandle.title = 'Drag to resize';
-    resizeHandle.addEventListener('mousedown', (e) => {
+    const resizeHandle = document.createElement("div");
+    resizeHandle.className = "lidar-chart-popup-resize";
+    resizeHandle.title = "拖动调整大小";
+    resizeHandle.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
       this._startPopupResize(e);
@@ -403,7 +408,7 @@ export class CrossSectionPanel {
     document.body.appendChild(this._popupBackdrop);
 
     // Prevent body scroll
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     this._popupResizeObserver = new ResizeObserver(() => {
       this._syncPopupChartSize();
@@ -431,7 +436,7 @@ export class CrossSectionPanel {
     this._popupContainer = undefined;
     this._popupChartContainer = undefined;
     this._ignoreBackdropClick = false;
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   }
 
   /**
@@ -448,10 +453,10 @@ export class CrossSectionPanel {
     this._resizeStartWidth = rect.width;
     this._resizeStartHeight = rect.height;
 
-    document.addEventListener('mousemove', this._handlePopupResizeMouseMove);
-    document.addEventListener('mouseup', this._handlePopupResizeMouseUp);
-    document.body.style.cursor = 'nwse-resize';
-    document.body.style.userSelect = 'none';
+    document.addEventListener("mousemove", this._handlePopupResizeMouseMove);
+    document.addEventListener("mouseup", this._handlePopupResizeMouseUp);
+    document.body.style.cursor = "nwse-resize";
+    document.body.style.userSelect = "none";
   }
 
   /**
@@ -463,8 +468,14 @@ export class CrossSectionPanel {
     const deltaX = e.clientX - this._resizeStartX;
     const deltaY = e.clientY - this._resizeStartY;
 
-    const newWidth = Math.max(400, Math.min(window.innerWidth - 40, this._resizeStartWidth + deltaX));
-    const newHeight = Math.max(300, Math.min(window.innerHeight - 40, this._resizeStartHeight + deltaY));
+    const newWidth = Math.max(
+      400,
+      Math.min(window.innerWidth - 40, this._resizeStartWidth + deltaX),
+    );
+    const newHeight = Math.max(
+      300,
+      Math.min(window.innerHeight - 40, this._resizeStartHeight + deltaY),
+    );
 
     this._popupContainer.style.width = `${newWidth}px`;
     this._popupContainer.style.height = `${newHeight}px`;
@@ -476,10 +487,10 @@ export class CrossSectionPanel {
    */
   private _onPopupResizeMouseUp(): void {
     this._isResizing = false;
-    document.removeEventListener('mousemove', this._handlePopupResizeMouseMove);
-    document.removeEventListener('mouseup', this._handlePopupResizeMouseUp);
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
+    document.removeEventListener("mousemove", this._handlePopupResizeMouseMove);
+    document.removeEventListener("mouseup", this._handlePopupResizeMouseUp);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
 
     this._syncPopupChartSize();
     window.setTimeout(() => {
@@ -498,9 +509,11 @@ export class CrossSectionPanel {
     const rect = this._popupChartContainer.getBoundingClientRect();
     const styles = window.getComputedStyle(this._popupChartContainer);
     const paddingX =
-      (Number.parseFloat(styles.paddingLeft) || 0) + (Number.parseFloat(styles.paddingRight) || 0);
+      (Number.parseFloat(styles.paddingLeft) || 0) +
+      (Number.parseFloat(styles.paddingRight) || 0);
     const paddingY =
-      (Number.parseFloat(styles.paddingTop) || 0) + (Number.parseFloat(styles.paddingBottom) || 0);
+      (Number.parseFloat(styles.paddingTop) || 0) +
+      (Number.parseFloat(styles.paddingBottom) || 0);
     const chartWidth = Math.max(200, rect.width - paddingX);
     const chartHeight = Math.max(150, rect.height - paddingY);
 
@@ -513,8 +526,16 @@ export class CrossSectionPanel {
   private _downloadCSV(): void {
     if (!this._profile || this._profile.points.length === 0) return;
 
-    const headers = ['distance', 'elevation', 'offsetFromLine', 'longitude', 'latitude', 'intensity', 'classification'];
-    const rows = [headers.join(',')];
+    const headers = [
+      "distance",
+      "elevation",
+      "offsetFromLine",
+      "longitude",
+      "latitude",
+      "intensity",
+      "classification",
+    ];
+    const rows = [headers.join(",")];
 
     for (const point of this._profile.points) {
       const row = [
@@ -523,20 +544,20 @@ export class CrossSectionPanel {
         point.offsetFromLine.toFixed(3),
         point.longitude.toFixed(8),
         point.latitude.toFixed(8),
-        point.intensity !== undefined ? point.intensity.toFixed(4) : '',
-        point.classification !== undefined ? String(point.classification) : '',
+        point.intensity !== undefined ? point.intensity.toFixed(4) : "",
+        point.classification !== undefined ? String(point.classification) : "",
       ];
-      rows.push(row.join(','));
+      rows.push(row.join(","));
     }
 
-    const csvContent = rows.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = rows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = `cross-section-profile-${Date.now()}.csv`;
-    link.style.display = 'none';
+    link.style.display = "none";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -558,10 +579,13 @@ export class CrossSectionPanel {
 
     // Remove document event listeners if resizing
     if (this._isResizing) {
-      document.removeEventListener('mousemove', this._handlePopupResizeMouseMove);
-      document.removeEventListener('mouseup', this._handlePopupResizeMouseUp);
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
+      document.removeEventListener(
+        "mousemove",
+        this._handlePopupResizeMouseMove,
+      );
+      document.removeEventListener("mouseup", this._handlePopupResizeMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
     }
 
     this._chart.destroy();

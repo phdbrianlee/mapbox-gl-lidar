@@ -1,12 +1,18 @@
-import type { LidarState, ColorScheme, PointCloudInfo, ColormapName, ColorRangeConfig } from '../core/types';
-import { FileInput } from './FileInput';
-import { RangeSlider } from './RangeSlider';
-import { DualRangeSlider } from './DualRangeSlider';
-import { ClassificationLegend } from './ClassificationLegend';
-import { Colorbar } from './Colorbar';
-import { PercentileRangeControl } from './PercentileRangeControl';
-import { formatNumber } from '../utils/helpers';
-import { COLORMAP_NAMES, COLORMAP_LABELS } from '../colorizers/Colormaps';
+import type {
+  LidarState,
+  ColorScheme,
+  PointCloudInfo,
+  ColormapName,
+  ColorRangeConfig,
+} from "../core/types";
+import { FileInput } from "./FileInput";
+import { RangeSlider } from "./RangeSlider";
+import { DualRangeSlider } from "./DualRangeSlider";
+import { ClassificationLegend } from "./ClassificationLegend";
+import { Colorbar } from "./Colorbar";
+import { PercentileRangeControl } from "./PercentileRangeControl";
+import { formatNumber } from "../utils/helpers";
+import { COLORMAP_NAMES, COLORMAP_LABELS } from "../colorizers/Colormaps";
 
 /**
  * Callbacks for panel interactions
@@ -27,7 +33,10 @@ export interface PanelBuilderCallbacks {
   onTerrainChange: (enabled: boolean) => void;
   onUnload: (id: string) => void;
   onZoomTo: (id: string) => void;
-  onClassificationToggle: (classificationCode: number, visible: boolean) => void;
+  onClassificationToggle: (
+    classificationCode: number,
+    visible: boolean,
+  ) => void;
   onClassificationShowAll: () => void;
   onClassificationHideAll: () => void;
   onShowMetadata?: (id: string) => void;
@@ -81,8 +90,8 @@ export class PanelBuilder {
    * @returns The panel content element
    */
   build(): HTMLElement {
-    const content = document.createElement('div');
-    content.className = 'lidar-control-content';
+    const content = document.createElement("div");
+    content.className = "lidar-control-content";
     // Apply max height from state
     if (this._state.maxHeight) {
       content.style.maxHeight = `${this._state.maxHeight}px`;
@@ -129,9 +138,9 @@ export class PanelBuilder {
     // Update loading state
     if (this._loadingIndicator) {
       if (state.loading) {
-        this._loadingIndicator.classList.add('active');
+        this._loadingIndicator.classList.add("active");
       } else {
-        this._loadingIndicator.classList.remove('active');
+        this._loadingIndicator.classList.remove("active");
       }
     }
 
@@ -139,9 +148,9 @@ export class PanelBuilder {
     if (this._errorMessage) {
       if (state.error) {
         this._errorMessage.textContent = state.error;
-        this._errorMessage.style.display = 'block';
+        this._errorMessage.style.display = "block";
       } else {
-        this._errorMessage.style.display = 'none';
+        this._errorMessage.style.display = "none";
       }
     }
 
@@ -157,7 +166,7 @@ export class PanelBuilder {
     }
 
     // Update color scheme
-    if (this._colorSelect && typeof state.colorScheme === 'string') {
+    if (this._colorSelect && typeof state.colorScheme === "string") {
       this._colorSelect.value = state.colorScheme;
       this._updatePercentileVisibility(state.colorScheme);
     }
@@ -173,7 +182,10 @@ export class PanelBuilder {
         this._colorbar.setColormap(state.colormap);
       }
       if (state.computedColorBounds) {
-        this._colorbar.setRange(state.computedColorBounds.min, state.computedColorBounds.max);
+        this._colorbar.setRange(
+          state.computedColorBounds.min,
+          state.computedColorBounds.max,
+        );
       }
     }
 
@@ -204,7 +216,9 @@ export class PanelBuilder {
       this._zOffsetCheckbox.checked = state.zOffsetEnabled ?? false;
     }
     if (this._zOffsetSliderContainer) {
-      this._zOffsetSliderContainer.style.display = state.zOffsetEnabled ? 'block' : 'none';
+      this._zOffsetSliderContainer.style.display = state.zOffsetEnabled
+        ? "block"
+        : "none";
     }
     if (this._zOffsetSlider) {
       // Update slider bounds centered around -zOffsetBase (the default z-offset)
@@ -236,7 +250,7 @@ export class PanelBuilder {
     if (this._classificationLegend && state.availableClassifications) {
       this._classificationLegend.setClassifications(
         Array.from(state.availableClassifications),
-        state.hiddenClassifications || new Set()
+        state.hiddenClassifications || new Set(),
       );
     }
 
@@ -256,8 +270,12 @@ export class PanelBuilder {
   updateLoadingProgress(progress: number, message?: string): void {
     if (!this._loadingIndicator) return;
 
-    const progressBar = this._loadingIndicator.querySelector('.lidar-loading-bar-fill') as HTMLElement;
-    const progressText = this._loadingIndicator.querySelector('.lidar-loading-progress') as HTMLElement;
+    const progressBar = this._loadingIndicator.querySelector(
+      ".lidar-loading-bar-fill",
+    ) as HTMLElement;
+    const progressText = this._loadingIndicator.querySelector(
+      ".lidar-loading-progress",
+    ) as HTMLElement;
 
     if (progressBar) {
       progressBar.style.width = `${progress}%`;
@@ -272,52 +290,52 @@ export class PanelBuilder {
    * Builds the file input section.
    */
   private _buildFileSection(): HTMLElement {
-    const section = document.createElement('div');
-    section.className = 'lidar-control-section';
+    const section = document.createElement("div");
+    section.className = "lidar-control-section";
 
     // File upload
     this._fileInput = new FileInput({
-      accept: '.las,.laz',
+      accept: ".las,.laz",
       onChange: (file) => this._callbacks.onFileSelect(file),
     });
     section.appendChild(this._fileInput.render());
 
     // URL input
-    const urlGroup = document.createElement('div');
-    urlGroup.className = 'lidar-control-group';
-    urlGroup.style.marginTop = '12px';
+    const urlGroup = document.createElement("div");
+    urlGroup.className = "lidar-control-group";
+    urlGroup.style.marginTop = "12px";
 
-    const urlLabel = document.createElement('label');
-    urlLabel.className = 'lidar-control-label';
-    urlLabel.textContent = 'Load COPC or EPT from URL';
+    const urlLabel = document.createElement("label");
+    urlLabel.className = "lidar-control-label";
+    urlLabel.textContent = "从 URL 加载 COPC 或 EPT";
     urlGroup.appendChild(urlLabel);
 
-    const urlRow = document.createElement('div');
-    urlRow.className = 'lidar-control-flex';
+    const urlRow = document.createElement("div");
+    urlRow.className = "lidar-control-flex";
 
-    const urlInput = document.createElement('input');
-    urlInput.type = 'text';
-    urlInput.className = 'lidar-control-input';
-    urlInput.placeholder = 'https://example.com/pointcloud.laz';
-    urlInput.style.flex = '1';
+    const urlInput = document.createElement("input");
+    urlInput.type = "text";
+    urlInput.className = "lidar-control-input";
+    urlInput.placeholder = "https://example.com/pointcloud.laz";
+    urlInput.style.flex = "1";
     this._urlInput = urlInput;
 
-    const loadBtn = document.createElement('button');
-    loadBtn.type = 'button';
-    loadBtn.className = 'lidar-control-button';
-    loadBtn.textContent = 'Load';
-    loadBtn.addEventListener('click', () => {
+    const loadBtn = document.createElement("button");
+    loadBtn.type = "button";
+    loadBtn.className = "lidar-control-button";
+    loadBtn.textContent = "加载";
+    loadBtn.addEventListener("click", () => {
       const url = urlInput.value.trim();
       if (url) {
         this._callbacks.onUrlSubmit(url);
-        urlInput.value = '';
+        urlInput.value = "";
       }
     });
     this._loadButton = loadBtn;
 
     // Allow Enter key to submit
-    urlInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
+    urlInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
         loadBtn.click();
       }
     });
@@ -334,34 +352,37 @@ export class PanelBuilder {
    * Builds the styling controls section.
    */
   private _buildStylingSection(): HTMLElement {
-    const section = document.createElement('div');
-    section.className = 'lidar-control-section';
+    const section = document.createElement("div");
+    section.className = "lidar-control-section";
 
     // Section header
-    const header = document.createElement('div');
-    header.className = 'lidar-control-section-header';
-    header.textContent = 'Styling';
+    const header = document.createElement("div");
+    header.className = "lidar-control-section-header";
+    header.textContent = "Styling";
     section.appendChild(header);
 
     // Color scheme selector
-    const colorGroup = document.createElement('div');
-    colorGroup.className = 'lidar-control-group';
+    const colorGroup = document.createElement("div");
+    colorGroup.className = "lidar-control-group";
 
-    const colorLabel = document.createElement('label');
-    colorLabel.className = 'lidar-control-label';
-    colorLabel.textContent = 'Color By';
+    const colorLabel = document.createElement("label");
+    colorLabel.className = "lidar-control-label";
+    colorLabel.textContent = "Color By";
     colorGroup.appendChild(colorLabel);
 
-    const colorSelect = document.createElement('select');
-    colorSelect.className = 'lidar-control-select';
+    const colorSelect = document.createElement("select");
+    colorSelect.className = "lidar-control-select";
     colorSelect.innerHTML = `
-      <option value="elevation">Elevation</option>
-      <option value="intensity">Intensity</option>
-      <option value="classification">Classification</option>
-      <option value="rgb">RGB (if available)</option>
+      <option value="elevation">高程</option>
+      <option value="intensity">强度</option>
+      <option value="classification">分类</option>
+      <option value="rgb">RGB (如有)</option>
     `;
-    colorSelect.value = typeof this._state.colorScheme === 'string' ? this._state.colorScheme : 'elevation';
-    colorSelect.addEventListener('change', () => {
+    colorSelect.value =
+      typeof this._state.colorScheme === "string"
+        ? this._state.colorScheme
+        : "elevation";
+    colorSelect.addEventListener("change", () => {
       this._callbacks.onColorSchemeChange(colorSelect.value as ColorScheme);
       // Show/hide percentile option based on color scheme
       this._updatePercentileVisibility(colorSelect.value);
@@ -384,7 +405,7 @@ export class PanelBuilder {
 
     // Point size slider
     this._pointSizeSlider = new RangeSlider({
-      label: 'Point Size',
+      label: "Point Size",
       min: 1,
       max: 10,
       step: 0.5,
@@ -395,7 +416,7 @@ export class PanelBuilder {
 
     // Opacity slider
     this._opacitySlider = new RangeSlider({
-      label: 'Opacity',
+      label: "Opacity",
       min: 0,
       max: 1,
       step: 0.05,
@@ -423,42 +444,42 @@ export class PanelBuilder {
    * Builds the elevation filter controls with checkbox and dual slider.
    */
   private _buildElevationFilter(): HTMLElement {
-    const group = document.createElement('div');
-    group.className = 'lidar-control-group';
+    const group = document.createElement("div");
+    group.className = "lidar-control-group";
 
     // Checkbox row
-    const labelRow = document.createElement('div');
-    labelRow.className = 'lidar-control-label-row';
-    labelRow.style.cursor = 'pointer';
+    const labelRow = document.createElement("div");
+    labelRow.className = "lidar-control-label-row";
+    labelRow.style.cursor = "pointer";
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = 'lidar-elevation-filter-checkbox';
-    checkbox.style.marginRight = '6px';
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "lidar-elevation-filter-checkbox";
+    checkbox.style.marginRight = "6px";
     this._elevationCheckbox = checkbox;
 
-    const label = document.createElement('label');
-    label.className = 'lidar-control-label';
-    label.htmlFor = 'lidar-elevation-filter-checkbox';
-    label.style.display = 'inline';
-    label.style.cursor = 'pointer';
-    label.textContent = 'Elevation Filter';
+    const label = document.createElement("label");
+    label.className = "lidar-control-label";
+    label.htmlFor = "lidar-elevation-filter-checkbox";
+    label.style.display = "inline";
+    label.style.cursor = "pointer";
+    label.textContent = "高程过滤";
 
     labelRow.appendChild(checkbox);
     labelRow.appendChild(label);
     group.appendChild(labelRow);
 
     // Slider container (hidden by default)
-    const sliderContainer = document.createElement('div');
-    sliderContainer.style.display = 'none';
-    sliderContainer.style.marginTop = '8px';
+    const sliderContainer = document.createElement("div");
+    sliderContainer.style.display = "none";
+    sliderContainer.style.marginTop = "8px";
 
     // Get elevation bounds from loaded point clouds
     const bounds = this._getElevationBounds();
 
     // Create dual range slider
     this._elevationSlider = new DualRangeSlider({
-      label: 'Range (m)',
+      label: "范围 (米)",
       min: bounds.min,
       max: bounds.max,
       step: 1,
@@ -476,8 +497,8 @@ export class PanelBuilder {
     group.appendChild(sliderContainer);
 
     // Toggle visibility and filter
-    checkbox.addEventListener('change', () => {
-      sliderContainer.style.display = checkbox.checked ? 'block' : 'none';
+    checkbox.addEventListener("change", () => {
+      sliderContainer.style.display = checkbox.checked ? "block" : "none";
       if (checkbox.checked) {
         // Update bounds when enabling filter
         const newBounds = this._getElevationBounds();
@@ -500,36 +521,38 @@ export class PanelBuilder {
    * Builds the Z offset control with checkbox and slider.
    */
   private _buildZOffsetControl(): HTMLElement {
-    const group = document.createElement('div');
-    group.className = 'lidar-control-group';
+    const group = document.createElement("div");
+    group.className = "lidar-control-group";
 
     // Checkbox row
-    const labelRow = document.createElement('div');
-    labelRow.className = 'lidar-control-label-row';
-    labelRow.style.cursor = 'pointer';
+    const labelRow = document.createElement("div");
+    labelRow.className = "lidar-control-label-row";
+    labelRow.style.cursor = "pointer";
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = 'lidar-zoffset-checkbox';
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "lidar-zoffset-checkbox";
     checkbox.checked = this._state.zOffsetEnabled ?? false;
-    checkbox.style.marginRight = '6px';
+    checkbox.style.marginRight = "6px";
     this._zOffsetCheckbox = checkbox;
 
-    const label = document.createElement('label');
-    label.className = 'lidar-control-label';
-    label.htmlFor = 'lidar-zoffset-checkbox';
-    label.style.display = 'inline';
-    label.style.cursor = 'pointer';
-    label.textContent = 'Z Offset';
+    const label = document.createElement("label");
+    label.className = "lidar-control-label";
+    label.htmlFor = "lidar-zoffset-checkbox";
+    label.style.display = "inline";
+    label.style.cursor = "pointer";
+    label.textContent = "Z 轴偏移";
 
     labelRow.appendChild(checkbox);
     labelRow.appendChild(label);
     group.appendChild(labelRow);
 
     // Slider container (hidden by default)
-    const sliderContainer = document.createElement('div');
-    sliderContainer.style.display = this._state.zOffsetEnabled ? 'block' : 'none';
-    sliderContainer.style.marginTop = '8px';
+    const sliderContainer = document.createElement("div");
+    sliderContainer.style.display = this._state.zOffsetEnabled
+      ? "block"
+      : "none";
+    sliderContainer.style.marginTop = "8px";
     this._zOffsetSliderContainer = sliderContainer;
 
     // Slider range centered around -zOffsetBase (the default z-offset for relative height)
@@ -541,7 +564,7 @@ export class PanelBuilder {
 
     // Create slider
     this._zOffsetSlider = new RangeSlider({
-      label: 'Offset (m)',
+      label: "偏移 (米)",
       min: sliderMin,
       max: sliderMax,
       step: 1,
@@ -553,8 +576,8 @@ export class PanelBuilder {
     group.appendChild(sliderContainer);
 
     // Toggle visibility and enable/disable offset
-    checkbox.addEventListener('change', () => {
-      sliderContainer.style.display = checkbox.checked ? 'block' : 'none';
+    checkbox.addEventListener("change", () => {
+      sliderContainer.style.display = checkbox.checked ? "block" : "none";
       this._callbacks.onZOffsetEnabledChange(checkbox.checked);
       if (!checkbox.checked) {
         // Reset offset to 0 when disabled
@@ -570,32 +593,32 @@ export class PanelBuilder {
    * Builds the 3D terrain toggle checkbox.
    */
   private _buildTerrainCheckbox(): HTMLElement {
-    const group = document.createElement('div');
-    group.className = 'lidar-control-group';
+    const group = document.createElement("div");
+    group.className = "lidar-control-group";
 
-    const labelRow = document.createElement('div');
-    labelRow.className = 'lidar-control-label-row';
-    labelRow.style.cursor = 'pointer';
+    const labelRow = document.createElement("div");
+    labelRow.className = "lidar-control-label-row";
+    labelRow.style.cursor = "pointer";
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = 'lidar-terrain-checkbox';
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "lidar-terrain-checkbox";
     checkbox.checked = this._state.terrainEnabled ?? false;
-    checkbox.style.marginRight = '6px';
+    checkbox.style.marginRight = "6px";
     this._terrainCheckbox = checkbox;
 
-    const label = document.createElement('label');
-    label.className = 'lidar-control-label';
-    label.htmlFor = 'lidar-terrain-checkbox';
-    label.style.display = 'inline';
-    label.style.cursor = 'pointer';
-    label.textContent = '3D Terrain';
+    const label = document.createElement("label");
+    label.className = "lidar-control-label";
+    label.htmlFor = "lidar-terrain-checkbox";
+    label.style.display = "inline";
+    label.style.cursor = "pointer";
+    label.textContent = "3D 地形";
 
     labelRow.appendChild(checkbox);
     labelRow.appendChild(label);
     group.appendChild(labelRow);
 
-    checkbox.addEventListener('change', () => {
+    checkbox.addEventListener("change", () => {
       this._callbacks.onTerrainChange(checkbox.checked);
     });
 
@@ -637,8 +660,11 @@ export class PanelBuilder {
    * Gets the appropriate data bounds based on the current color scheme.
    */
   private _getDataBoundsForCurrentScheme(): { min: number; max: number } {
-    const colorScheme = typeof this._state.colorScheme === 'string' ? this._state.colorScheme : 'elevation';
-    if (colorScheme === 'intensity') {
+    const colorScheme =
+      typeof this._state.colorScheme === "string"
+        ? this._state.colorScheme
+        : "elevation";
+    if (colorScheme === "intensity") {
       return this._getIntensityBounds();
     }
     return this._getElevationBounds();
@@ -648,34 +674,38 @@ export class PanelBuilder {
    * Builds the colormap selector dropdown.
    */
   private _buildColormapSelector(): HTMLElement {
-    const group = document.createElement('div');
-    group.className = 'lidar-colormap-group';
+    const group = document.createElement("div");
+    group.className = "lidar-colormap-group";
     this._colormapGroup = group;
 
     // Set initial visibility based on current color scheme
-    const currentScheme = typeof this._state.colorScheme === 'string' ? this._state.colorScheme : 'elevation';
-    const showColormap = currentScheme === 'elevation' || currentScheme === 'intensity';
-    group.style.display = showColormap ? 'block' : 'none';
+    const currentScheme =
+      typeof this._state.colorScheme === "string"
+        ? this._state.colorScheme
+        : "elevation";
+    const showColormap =
+      currentScheme === "elevation" || currentScheme === "intensity";
+    group.style.display = showColormap ? "block" : "none";
 
-    const label = document.createElement('label');
-    label.className = 'lidar-control-label';
-    label.textContent = 'Colormap';
+    const label = document.createElement("label");
+    label.className = "lidar-control-label";
+    label.textContent = "Colormap";
     group.appendChild(label);
 
     // Select dropdown
-    const select = document.createElement('select');
-    select.className = 'lidar-colormap-select';
+    const select = document.createElement("select");
+    select.className = "lidar-colormap-select";
 
     for (const name of COLORMAP_NAMES) {
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.value = name;
       option.textContent = COLORMAP_LABELS[name];
       select.appendChild(option);
     }
-    select.value = this._state.colormap || 'viridis';
+    select.value = this._state.colormap || "viridis";
     this._colormapSelect = select;
 
-    select.addEventListener('change', () => {
+    select.addEventListener("change", () => {
       const colormap = select.value as ColormapName;
       this._callbacks.onColormapChange(colormap);
     });
@@ -689,18 +719,23 @@ export class PanelBuilder {
    * Builds the colorbar component.
    */
   private _buildColorbar(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'lidar-control-group';
+    const container = document.createElement("div");
+    container.className = "lidar-control-group";
     this._colorbarContainer = container;
 
     // Set initial visibility based on current color scheme
-    const currentScheme = typeof this._state.colorScheme === 'string' ? this._state.colorScheme : 'elevation';
-    const showColorbar = (currentScheme === 'elevation' || currentScheme === 'intensity') && this._state.showColorbar;
-    container.style.display = showColorbar ? 'block' : 'none';
+    const currentScheme =
+      typeof this._state.colorScheme === "string"
+        ? this._state.colorScheme
+        : "elevation";
+    const showColorbar =
+      (currentScheme === "elevation" || currentScheme === "intensity") &&
+      this._state.showColorbar;
+    container.style.display = showColorbar ? "block" : "none";
 
     // Create the colorbar
     this._colorbar = new Colorbar({
-      colormap: this._state.colormap || 'viridis',
+      colormap: this._state.colormap || "viridis",
       minValue: this._state.computedColorBounds?.min ?? 0,
       maxValue: this._state.computedColorBounds?.max ?? 100,
     });
@@ -713,14 +748,18 @@ export class PanelBuilder {
    * Builds the color range control (replaces percentile checkbox).
    */
   private _buildColorRangeControl(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'lidar-control-group';
+    const container = document.createElement("div");
+    container.className = "lidar-control-group";
     this._colorRangeContainer = container;
 
     // Set initial visibility based on current color scheme
-    const currentScheme = typeof this._state.colorScheme === 'string' ? this._state.colorScheme : 'elevation';
-    const showControl = currentScheme === 'elevation' || currentScheme === 'intensity';
-    container.style.display = showControl ? 'block' : 'none';
+    const currentScheme =
+      typeof this._state.colorScheme === "string"
+        ? this._state.colorScheme
+        : "elevation";
+    const showControl =
+      currentScheme === "elevation" || currentScheme === "intensity";
+    container.style.display = showControl ? "block" : "none";
 
     // Get data bounds based on current color scheme
     const dataBounds = this._getDataBoundsForCurrentScheme();
@@ -728,7 +767,7 @@ export class PanelBuilder {
     // Create the control
     this._colorRangeControl = new PercentileRangeControl({
       config: this._state.colorRange || {
-        mode: 'percentile',
+        mode: "percentile",
         percentileLow: 2,
         percentileHigh: 98,
       },
@@ -749,21 +788,25 @@ export class PanelBuilder {
    * Shows classification legend for classification.
    */
   private _updatePercentileVisibility(colorScheme: string): void {
-    const showColorControls = colorScheme === 'elevation' || colorScheme === 'intensity';
+    const showColorControls =
+      colorScheme === "elevation" || colorScheme === "intensity";
 
     // Show/hide colormap selector
     if (this._colormapGroup) {
-      this._colormapGroup.style.display = showColorControls ? 'block' : 'none';
+      this._colormapGroup.style.display = showColorControls ? "block" : "none";
     }
 
     // Show/hide colorbar
     if (this._colorbarContainer) {
-      this._colorbarContainer.style.display = showColorControls && this._state.showColorbar ? 'block' : 'none';
+      this._colorbarContainer.style.display =
+        showColorControls && this._state.showColorbar ? "block" : "none";
     }
 
     // Show/hide color range control and update bounds for the new scheme
     if (this._colorRangeContainer) {
-      this._colorRangeContainer.style.display = showColorControls ? 'block' : 'none';
+      this._colorRangeContainer.style.display = showColorControls
+        ? "block"
+        : "none";
     }
     if (this._colorRangeControl && showColorControls) {
       // Update data bounds when switching between elevation and intensity
@@ -773,13 +816,13 @@ export class PanelBuilder {
 
     // Legacy percentile group (keep for backward compatibility)
     if (this._percentileGroup) {
-      this._percentileGroup.style.display = 'none'; // Hide legacy control
+      this._percentileGroup.style.display = "none"; // Hide legacy control
     }
 
     // Show/hide classification legend
     if (this._classificationLegendContainer) {
       this._classificationLegendContainer.style.display =
-        colorScheme === 'classification' ? 'block' : 'none';
+        colorScheme === "classification" ? "block" : "none";
     }
   }
 
@@ -787,19 +830,26 @@ export class PanelBuilder {
    * Builds the classification legend component.
    */
   private _buildClassificationLegend(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'lidar-control-group';
+    const container = document.createElement("div");
+    container.className = "lidar-control-group";
     this._classificationLegendContainer = container;
 
     // Set initial visibility based on current color scheme
-    const currentScheme = typeof this._state.colorScheme === 'string' ? this._state.colorScheme : 'elevation';
-    container.style.display = currentScheme === 'classification' ? 'block' : 'none';
+    const currentScheme =
+      typeof this._state.colorScheme === "string"
+        ? this._state.colorScheme
+        : "elevation";
+    container.style.display =
+      currentScheme === "classification" ? "block" : "none";
 
     // Create the legend component
     this._classificationLegend = new ClassificationLegend({
-      classifications: Array.from(this._state.availableClassifications || new Set()),
+      classifications: Array.from(
+        this._state.availableClassifications || new Set(),
+      ),
       hiddenClassifications: this._state.hiddenClassifications || new Set(),
-      onToggle: (code, visible) => this._callbacks.onClassificationToggle(code, visible),
+      onToggle: (code, visible) =>
+        this._callbacks.onClassificationToggle(code, visible),
       onShowAll: () => this._callbacks.onClassificationShowAll(),
       onHideAll: () => this._callbacks.onClassificationHideAll(),
     });
@@ -812,28 +862,28 @@ export class PanelBuilder {
    * Builds the pickable checkbox control.
    */
   private _buildPickableCheckbox(): HTMLElement {
-    const group = document.createElement('div');
-    group.className = 'lidar-control-group';
+    const group = document.createElement("div");
+    group.className = "lidar-control-group";
 
-    const labelRow = document.createElement('div');
-    labelRow.className = 'lidar-control-label-row';
-    labelRow.style.cursor = 'pointer';
+    const labelRow = document.createElement("div");
+    labelRow.className = "lidar-control-label-row";
+    labelRow.style.cursor = "pointer";
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = 'lidar-pickable-checkbox';
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "lidar-pickable-checkbox";
     checkbox.checked = this._state.pickable ?? false;
-    checkbox.style.marginRight = '6px';
+    checkbox.style.marginRight = "6px";
     this._pickableCheckbox = checkbox;
 
-    const label = document.createElement('label');
-    label.className = 'lidar-control-label';
-    label.htmlFor = 'lidar-pickable-checkbox';
-    label.style.display = 'inline';
-    label.style.cursor = 'pointer';
-    label.textContent = 'Enable point picking';
+    const label = document.createElement("label");
+    label.className = "lidar-control-label";
+    label.htmlFor = "lidar-pickable-checkbox";
+    label.style.display = "inline";
+    label.style.cursor = "pointer";
+    label.textContent = "启用点云拾取";
 
-    checkbox.addEventListener('change', () => {
+    checkbox.addEventListener("change", () => {
       this._callbacks.onPickableChange(checkbox.checked);
     });
 
@@ -848,16 +898,16 @@ export class PanelBuilder {
    * Builds the loaded point clouds list.
    */
   private _buildPointCloudsList(): HTMLElement {
-    const section = document.createElement('div');
-    section.className = 'lidar-control-section lidar-pointclouds-section';
+    const section = document.createElement("div");
+    section.className = "lidar-control-section lidar-pointclouds-section";
 
-    const header = document.createElement('div');
-    header.className = 'lidar-control-section-header';
-    header.textContent = 'Loaded Point Clouds';
+    const header = document.createElement("div");
+    header.className = "lidar-control-section-header";
+    header.textContent = "已加载的点云";
     section.appendChild(header);
 
-    const list = document.createElement('div');
-    list.className = 'lidar-pointclouds-list';
+    const list = document.createElement("div");
+    list.className = "lidar-pointclouds-list";
     this._pointCloudsList = list;
     section.appendChild(list);
 
@@ -872,12 +922,12 @@ export class PanelBuilder {
   private _updatePointCloudsList(): void {
     if (!this._pointCloudsList) return;
 
-    this._pointCloudsList.innerHTML = '';
+    this._pointCloudsList.innerHTML = "";
 
     if (this._state.pointClouds.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'lidar-pointclouds-empty';
-      empty.textContent = 'No point clouds loaded';
+      const empty = document.createElement("div");
+      empty.className = "lidar-pointclouds-empty";
+      empty.textContent = "未加载点云";
       this._pointCloudsList.appendChild(empty);
       return;
     }
@@ -891,54 +941,54 @@ export class PanelBuilder {
    * Builds a single point cloud list item.
    */
   private _buildPointCloudItem(pc: PointCloudInfo): HTMLElement {
-    const item = document.createElement('div');
-    item.className = 'lidar-pointcloud-item';
+    const item = document.createElement("div");
+    item.className = "lidar-pointcloud-item";
 
-    const info = document.createElement('div');
-    info.className = 'lidar-pointcloud-info';
+    const info = document.createElement("div");
+    info.className = "lidar-pointcloud-info";
 
-    const name = document.createElement('div');
-    name.className = 'lidar-pointcloud-name';
+    const name = document.createElement("div");
+    name.className = "lidar-pointcloud-name";
     name.textContent = pc.name;
     name.title = pc.name;
 
-    const details = document.createElement('div');
-    details.className = 'lidar-pointcloud-details';
-    details.textContent = `${formatNumber(pc.pointCount)} points`;
+    const details = document.createElement("div");
+    details.className = "lidar-pointcloud-details";
+    details.textContent = `${formatNumber(pc.pointCount)} 个点`;
 
     info.appendChild(name);
     info.appendChild(details);
 
-    const actions = document.createElement('div');
-    actions.className = 'lidar-pointcloud-actions';
+    const actions = document.createElement("div");
+    actions.className = "lidar-pointcloud-actions";
 
     // Info button
     if (this._callbacks.onShowMetadata) {
-      const infoBtn = document.createElement('button');
-      infoBtn.type = 'button';
-      infoBtn.className = 'lidar-pointcloud-action info';
-      infoBtn.textContent = 'Info';
-      infoBtn.title = 'Show metadata';
-      infoBtn.addEventListener('click', (e) => {
+      const infoBtn = document.createElement("button");
+      infoBtn.type = "button";
+      infoBtn.className = "lidar-pointcloud-action info";
+      infoBtn.textContent = "详情";
+      infoBtn.title = "显示元数据";
+      infoBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this._callbacks.onShowMetadata!(pc.id);
       });
       actions.appendChild(infoBtn);
     }
 
-    const zoomBtn = document.createElement('button');
-    zoomBtn.type = 'button';
-    zoomBtn.className = 'lidar-pointcloud-action';
-    zoomBtn.textContent = 'Zoom';
-    zoomBtn.title = 'Zoom to point cloud';
-    zoomBtn.addEventListener('click', () => this._callbacks.onZoomTo(pc.id));
+    const zoomBtn = document.createElement("button");
+    zoomBtn.type = "button";
+    zoomBtn.className = "lidar-pointcloud-action";
+    zoomBtn.textContent = "缩放";
+    zoomBtn.title = "缩放至点云";
+    zoomBtn.addEventListener("click", () => this._callbacks.onZoomTo(pc.id));
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'lidar-pointcloud-action remove';
-    removeBtn.textContent = 'Remove';
-    removeBtn.title = 'Remove point cloud';
-    removeBtn.addEventListener('click', (e) => {
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "lidar-pointcloud-action remove";
+    removeBtn.textContent = "移除";
+    removeBtn.title = "移除点云";
+    removeBtn.addEventListener("click", (e) => {
       e.stopPropagation(); // Prevent click-outside handler from collapsing panel
       this._callbacks.onUnload(pc.id);
     });
@@ -956,12 +1006,12 @@ export class PanelBuilder {
    * Builds the loading indicator.
    */
   private _buildLoadingIndicator(): HTMLElement {
-    const loading = document.createElement('div');
-    loading.className = 'lidar-loading';
+    const loading = document.createElement("div");
+    loading.className = "lidar-loading";
     loading.innerHTML = `
       <div class="lidar-loading-spinner"></div>
-      <div class="lidar-loading-text">Loading point cloud...</div>
-      <div class="lidar-loading-progress">Preparing...</div>
+      <div class="lidar-loading-text">正在加载点云...</div>
+      <div class="lidar-loading-progress">准备中...</div>
       <div class="lidar-loading-bar">
         <div class="lidar-loading-bar-fill"></div>
       </div>
@@ -974,9 +1024,9 @@ export class PanelBuilder {
    * Builds the error message display.
    */
   private _buildErrorMessage(): HTMLElement {
-    const error = document.createElement('div');
-    error.className = 'lidar-error';
-    error.style.display = 'none';
+    const error = document.createElement("div");
+    error.className = "lidar-error";
+    error.style.display = "none";
     this._errorMessage = error;
     return error;
   }
@@ -992,27 +1042,27 @@ export class PanelBuilder {
     const panel = this._callbacks.onCrossSectionPanel();
     if (!panel) return null;
 
-    const section = document.createElement('div');
-    section.className = 'lidar-control-section lidar-crosssection-section';
+    const section = document.createElement("div");
+    section.className = "lidar-control-section lidar-crosssection-section";
 
-    const header = document.createElement('div');
-    header.className = 'lidar-control-section-header lidar-section-collapsible';
-    header.innerHTML = '<span class="lidar-section-toggle">▶</span> Cross-Section';
-    header.style.cursor = 'pointer';
+    const header = document.createElement("div");
+    header.className = "lidar-control-section-header lidar-section-collapsible";
+    header.innerHTML = '<span class="lidar-section-toggle">▶</span> 横截面';
+    header.style.cursor = "pointer";
 
-    const body = document.createElement('div');
-    body.className = 'lidar-section-body';
-    body.style.display = 'none';
+    const body = document.createElement("div");
+    body.className = "lidar-section-body";
+    body.style.display = "none";
     body.appendChild(panel);
 
-    header.addEventListener('click', () => {
-      const toggle = header.querySelector('.lidar-section-toggle');
-      if (body.style.display === 'none') {
-        body.style.display = 'block';
-        if (toggle) toggle.textContent = '▼';
+    header.addEventListener("click", () => {
+      const toggle = header.querySelector(".lidar-section-toggle");
+      if (body.style.display === "none") {
+        body.style.display = "block";
+        if (toggle) toggle.textContent = "▼";
       } else {
-        body.style.display = 'none';
-        if (toggle) toggle.textContent = '▶';
+        body.style.display = "none";
+        if (toggle) toggle.textContent = "▶";
       }
     });
 

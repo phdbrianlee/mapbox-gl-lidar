@@ -1,4 +1,7 @@
-import { CLASSIFICATION_COLORS, getClassificationName } from '../colorizers/ColorScheme';
+import {
+  CLASSIFICATION_COLORS,
+  getClassificationName,
+} from "../colorizers/ColorScheme";
 
 /**
  * Options for creating a classification legend
@@ -36,43 +39,45 @@ export class ClassificationLegend {
    * @returns The legend container element
    */
   render(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'lidar-classification-legend';
+    const container = document.createElement("div");
+    container.className = "lidar-classification-legend";
     this._container = container;
 
     // Header with Show All / Hide All buttons
-    const header = document.createElement('div');
-    header.className = 'lidar-classification-legend-header';
+    const header = document.createElement("div");
+    header.className = "lidar-classification-legend-header";
 
-    const showAllBtn = document.createElement('button');
-    showAllBtn.type = 'button';
-    showAllBtn.className = 'lidar-legend-action-btn';
-    showAllBtn.textContent = 'Show All';
-    showAllBtn.addEventListener('click', () => this._options.onShowAll());
+    const showAllBtn = document.createElement("button");
+    showAllBtn.type = "button";
+    showAllBtn.className = "lidar-legend-action-btn";
+    showAllBtn.textContent = "全部显示";
+    showAllBtn.addEventListener("click", () => this._options.onShowAll());
 
-    const hideAllBtn = document.createElement('button');
-    hideAllBtn.type = 'button';
-    hideAllBtn.className = 'lidar-legend-action-btn';
-    hideAllBtn.textContent = 'Hide All';
-    hideAllBtn.addEventListener('click', () => this._options.onHideAll());
+    const hideAllBtn = document.createElement("button");
+    hideAllBtn.type = "button";
+    hideAllBtn.className = "lidar-legend-action-btn";
+    hideAllBtn.textContent = "全部隐藏";
+    hideAllBtn.addEventListener("click", () => this._options.onHideAll());
 
     header.appendChild(showAllBtn);
     header.appendChild(hideAllBtn);
     container.appendChild(header);
 
     // Legend items list
-    const list = document.createElement('div');
-    list.className = 'lidar-classification-legend-list';
+    const list = document.createElement("div");
+    list.className = "lidar-classification-legend-list";
     this._listContainer = list;
 
     // Sort classifications by code for consistent ordering
-    const sortedClassifications = [...this._options.classifications].sort((a, b) => a - b);
+    const sortedClassifications = [...this._options.classifications].sort(
+      (a, b) => a - b,
+    );
 
     if (sortedClassifications.length === 0) {
       // Show placeholder message
-      const placeholder = document.createElement('div');
-      placeholder.className = 'lidar-classification-empty';
-      placeholder.textContent = 'Loading classifications...';
+      const placeholder = document.createElement("div");
+      placeholder.className = "lidar-classification-empty";
+      placeholder.textContent = "正在加载分类...";
       list.appendChild(placeholder);
     } else {
       for (const code of sortedClassifications) {
@@ -91,29 +96,29 @@ export class ClassificationLegend {
    * @returns The legend item element
    */
   private _buildLegendItem(code: number): HTMLElement {
-    const item = document.createElement('div');
-    item.className = 'lidar-classification-legend-item';
+    const item = document.createElement("div");
+    item.className = "lidar-classification-legend-item";
 
     // Checkbox
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
     checkbox.checked = !this._options.hiddenClassifications.has(code);
     checkbox.id = `lidar-class-${code}`;
-    checkbox.addEventListener('change', () => {
+    checkbox.addEventListener("change", () => {
       this._options.onToggle(code, checkbox.checked);
     });
     this._checkboxes.set(code, checkbox);
 
     // Color swatch
-    const swatch = document.createElement('span');
-    swatch.className = 'lidar-classification-swatch';
+    const swatch = document.createElement("span");
+    swatch.className = "lidar-classification-swatch";
     const color = CLASSIFICATION_COLORS[code] || [128, 128, 128];
     swatch.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
 
     // Label
-    const label = document.createElement('label');
+    const label = document.createElement("label");
     label.htmlFor = `lidar-class-${code}`;
-    label.className = 'lidar-classification-label';
+    label.className = "lidar-classification-label";
     label.textContent = getClassificationName(code);
 
     item.appendChild(checkbox);
@@ -153,25 +158,30 @@ export class ClassificationLegend {
    * @param classifications - Array of classification codes to display
    * @param hiddenClassifications - Set of hidden classification codes
    */
-  setClassifications(classifications: number[], hiddenClassifications: Set<number>): void {
+  setClassifications(
+    classifications: number[],
+    hiddenClassifications: Set<number>,
+  ): void {
     this._options.classifications = classifications;
     this._options.hiddenClassifications = hiddenClassifications;
 
     // Re-render the list
     if (this._listContainer) {
       // Clear existing items
-      this._listContainer.innerHTML = '';
+      this._listContainer.innerHTML = "";
       this._checkboxes.clear();
 
       if (classifications.length === 0) {
         // Show placeholder message
-        const placeholder = document.createElement('div');
-        placeholder.className = 'lidar-classification-empty';
-        placeholder.textContent = 'No classifications found';
+        const placeholder = document.createElement("div");
+        placeholder.className = "lidar-classification-empty";
+        placeholder.textContent = "未找到分类";
         this._listContainer.appendChild(placeholder);
       } else {
         // Sort and rebuild
-        const sortedClassifications = [...classifications].sort((a, b) => a - b);
+        const sortedClassifications = [...classifications].sort(
+          (a, b) => a - b,
+        );
 
         for (const code of sortedClassifications) {
           this._listContainer.appendChild(this._buildLegendItem(code));

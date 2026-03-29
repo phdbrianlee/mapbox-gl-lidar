@@ -2,6 +2,8 @@
 
 基于 Mapbox GL JS 和 deck.gl 的 LiDAR 点云可视化插件。
 
+> 本项目是 [maplibre-gl-lidar](https://github.com/opengeos/maplibre-gl-lidar) 的改造版本，将 MapLibre GL 替换为 Mapbox GL JS 以支持更多 Mapbox 生态功能。
+
 [![npm 版本](https://img.shields.io/npm/v/mapbox-gl-lidar.svg)](https://www.npmjs.com/package/mapbox-gl-lidar)
 [![许可证: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -68,7 +70,7 @@ map.on("load", () => {
   });
 
   lidarControl.loadPointCloud(
-    "https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz"
+    "https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz",
   );
 });
 ```
@@ -135,7 +137,7 @@ function App() {
 ```typescript
 interface LidarControlOptions {
   collapsed?: boolean;
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   title?: string;
   panelWidth?: number;
   panelMaxHeight?: number;
@@ -274,12 +276,13 @@ npx http-server dist-examples -p 3000
 
 ### 构建产物
 
-| 目录 | 说明 |
-|------|------|
-| `dist/` | 库的核心构建产物 |
+| 目录             | 说明               |
+| ---------------- | ------------------ |
+| `dist/`          | 库的核心构建产物   |
 | `dist-examples/` | 示例应用的构建产物 |
 
 `dist/` 目录包含：
+
 - `index.mjs` / `index.cjs` - 主入口
 - `react.mjs` / `react.cjs` - React 入口
 - `mapbox-gl-lidar.css` - 样式文件
